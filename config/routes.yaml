@@ -3,3 +3,12 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+# Defino una nueva ruta (gentileza de Alejandro)
+app_aleatorio_v4:
+    path: /mi_aleatorio_44
+    controller: App\Controller\AleatorioController::mialeatorio3
+
+app_aleatorio_5:
+    path: /mi_aleatorio_5
+    controller: App\Controller\AleatorioController::mialeatorio5
