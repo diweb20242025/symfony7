@@ -19,24 +19,53 @@
     <p class="alert alert-warning m-3 p-3">Tu aleatorio1 es: {{ numero_aleatorio1 }}</p>
     <p class="alert alert-warning m-3 p-3">Tu aleatorio2 es: {{ numero_aleatorio2 }}</p>
 </section>
+
 <section class="example-wrapper">
     {# Comentario Twig #}
-    {# Bucle FOR #}
-    <table>
+    {# Bucle FOR -> {% for var in num1.. num2 %} / {% endfor %}#}
+    {# Condicional if -> {% if condicion %} / {% else %} / {% endif %}#}
+    <table class="table table-primary table-striped">
         <thead>
             <tr>
-                <th></th>
-                <th></th>
+                <th>Número</th>
+                <th>¿Es par?</th>
             </tr>
         </thead>
         <tbody>
+            {% for numero in numero_aleatorio1.. numero_aleatorio2 %}
             <tr>
-                <td></td>
-                <td></td>
+                <td> {{ numero }} </td>
+                <td>
+                {% if numero %2 == 0 %}
+                    Par
+                {% else %}
+                    Impar
+                {% endif %}
+                </td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
     <p class="alert alert-warning m-3 p-3">Tu aleatorio1 es: {{ numero_aleatorio1 }}</p>
     <p class="alert alert-warning m-3 p-3">Tu aleatorio2 es: {{ numero_aleatorio2 }}</p>
+</section>
+
+<section class="example-wrapper">
+    <p class="alert alert-warning m-3 p-3">Tu aleatorio1 es: {{ numero_aleatorio1 }}</p>
+    <p class="alert alert-warning m-3 p-3">Tu aleatorio2 es: {{ numero_aleatorio2 }}</p>
+    {# Escribir variable {{ variable }} #}
+    {# Definir una variable {% set variable = valor %} #}
+    {#  PHP
+        $num = 1;
+        for ($i = $num; $i <= 5; $i++) {
+            echo $i;
+        }
+    #}
+    <p class="alert alert-primary m-3 p-3">
+        {% set num = 1 %}
+        {% for n in num.. 5 %}
+            {{ n }}   
+        {% endfor %}
+    </p>
 </section>
 {% endblock %}
