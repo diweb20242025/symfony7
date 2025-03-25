@@ -19,8 +19,12 @@ class Articulos
     #[ORM\Column]
     private ?bool $publicado = null;
 
+    // En Articulos.php, definimos la conexión entre tablas.
+    // Si se cambia en la tabla principal el Primary Key
+    // Hay que poner estas propiedades: name, referencedColumnName
     #[ORM\ManyToOne(inversedBy: 'articulos')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, name: 'nif_autor', 
+    referencedColumnName: 'nif')]
     private ?Autores $nifAutor = null;
 
 
