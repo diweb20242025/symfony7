@@ -20,8 +20,10 @@ final class ArticulosController extends AbstractController
         ]);
     }
 
-    #[Route('/crear-articulos', 
-    name: 'app_articulos_insertar_articulos')]
+    #[Route(
+        '/crear-articulos',
+        name: 'app_articulos_insertar_articulos'
+    )]
     public function crearArticulos(ManagerRegistry $doctrine): Response
     {
         $entityManager = $doctrine->getManager();
@@ -49,13 +51,47 @@ final class ArticulosController extends AbstractController
         // Y meto en la tabla artículo por artículo
         foreach ($articulos as $articulo) {
             $nuevoArticulo = new Articulos();
+            $nuevoArticulo->setTitulo($articulo['titulo']);
+            $nuevoArticulo->setPublicado($articulo['publicado']);
+
+            // Tengo que poner el objeto de la tabla principal
+            // Para ello uso el repositorio de Autores
+            $nif = $entityManager->getRepository
+            (Autores::class)->find($articulo['nifAutor']);
+            $nuevoArticulo->setNifAutor($nif);
+
+            $entityManager->persist($nuevoArticulo);
+            $entityManager->flush();
         }
 
+        return new Response("<h2> Artículos metidos</h2>");
+    }
 
+    #[Route(
+        '/crea-articulo/{titulo}/{publicado}/{nif}',
+        name: 'app_articulos_insertar_articulo'
+    )]
+    public function creaArticulo(ManagerRegistry $doctrine,
+    string $titulo, int $publicado, string $nif): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $nuevoArticulo = new Articulos();
+        $nuevoArticulo->setTitulo($titulo);
+        $nuevoArticulo->setPublicado($publicado);
+        // Vamos a controlar que el NIF existe
+        $mensaje = "";
+        $nif = $entityManager->getRepository
+        (Autores::class)->find($nif);
 
+        if($nif==null) {
+            $mensaje = "ERROR! No existe el autor";
+        } else {
+            $nuevoArticulo->setNifAutor($nif);
+            $entityManager->persist($nuevoArticulo);
+            $entityManager->flush();
+            $mensaje = "EXITO! Se ha introducido el artículo.";
+        }
 
-        return $this->render('articulos/index.html.twig', [
-            'controller_name' => 'ArticulosController',
-        ]);
+        return new Response("<h2> $mensaje </h2>");
     }
 }
