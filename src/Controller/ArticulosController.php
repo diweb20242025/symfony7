@@ -10,6 +10,9 @@ use App\Entity\Articulos;   // Entidad Articulos
 use App\Entity\Autores;     // OJO! Poner también la principal
 use Doctrine\Persistence\ManagerRegistry;
 
+// Vamos a meter directamente el repositorio
+use App\Repository\ArticulosRepository;
+
 final class ArticulosController extends AbstractController
 {
     #[Route('/articulos', name: 'app_articulos')]
@@ -93,5 +96,17 @@ final class ArticulosController extends AbstractController
         }
 
         return new Response("<h2> $mensaje </h2>");
+    }
+
+
+    #[Route('/ver-articulos', name: 'app_articulos_ver')]
+    public function verArticulos(ArticulosRepository $repo): Response
+    {
+        $articulos = $repo->findAll();
+
+        return $this->render('articulos/articulos.html.twig', [
+            'controller_name' => 'ArticulosController',
+            'articulos' => $articulos,
+        ]);
     }
 }

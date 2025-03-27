@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{# articulos.html.twig #}
+{% block title %}Hello ArticulosController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code>/var/www/html/symfony7/src/Controller/ArticulosController.php</code></li>
+        <li>Your template at <code>/var/www/html/symfony7/templates/articulos/index.html.twig</code></li>
+    </ul>
+</div>
+<section>
+    <table class="table table-primary table-striped m-3 p-3">
+        <tr>
+            <th>ID</th>
+            <th>Titulo</th>
+            <th>Publicado</th>
+            <th>NifAutor</th>
+            <th>Nombre Autor</th>
+        </tr>
+        {% for articulo in articulos %}
+        <tr>
+            <td>{{ articulo.id }}</td>
+            <td>{{ articulo.titulo }}</td>
+            <td>{{ articulo.publicado? "Si" : "No" }}</td>
+            <td>{{ articulo.nifAutor.nif }}</td>
+            <td>{{ articulo.nifAutor.nombre }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+{% endblock %}

@@ -67,6 +67,20 @@ final class AutoresController extends AbstractController
             . $autor->getNif() ." </h2>");
     }
 
+    #[Route('/ver-autores', name: 'app_autores_ver')]
+    public function verAutores(ManagerRegistry $doctrine): Response
+    {
+        // Sacamos de la biblioteca de gestión de Registros
+        // ManagerRegistry el repositorio de Autores
+        $repoAutores = $doctrine->getRepository(Autores::class);
+        // Sacamos TODOS los registros
+        $autores = $repoAutores->findAll();
+        
+        return $this->render('autores/autores.html.twig', [
+            'controller_name' => 'AutoresController',
+            'autores' => $autores,
+        ]);
+    }
 
     
 }
