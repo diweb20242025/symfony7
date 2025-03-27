@@ -61,3 +61,5 @@ Articulos (tabla relacionada):
 Autores (tabla principal):
 - http://localhost:8000/ver-autores
 
+Articulos (tabla relacionada):
+- http://localhost:8000/ver-articulos
