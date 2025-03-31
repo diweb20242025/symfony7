@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Entity;
-
 use App\Repository\AutoresRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AutoresRepository::class)]
 class Autores
 {
-   
     #[ORM\Id]
     #[ORM\Column(length: 9)]
     private ?string $nif = null;
@@ -31,57 +28,43 @@ class Autores
     #[ORM\OneToMany(targetEntity: Articulos::class, mappedBy: 'nifAutor')]
     private Collection $articulos;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->articulos = new ArrayCollection();
     }
 
-
-    public function getNif(): ?string
-    {
+    public function getNif(): ?string{
         return $this->nif;
     }
 
-    public function setNif(string $nif): static
-    {
+    public function setNif(string $nif): static{
         $this->nif = $nif;
-
         return $this;
     }
 
-    public function getNombre(): ?string
-    {
+    public function getNombre(): ?string{
         return $this->nombre;
     }
 
-    public function setNombre(string $nombre): static
-    {
+    public function setNombre(string $nombre): static{
         $this->nombre = $nombre;
-
         return $this;
     }
 
-    public function getEdad(): ?int
-    {
+    public function getEdad(): ?int{
         return $this->edad;
     }
 
-    public function setEdad(?int $edad): static
-    {
+    public function setEdad(?int $edad): static{
         $this->edad = $edad;
-
         return $this;
     }
 
-    public function getSueldoHora(): ?string
-    {
+    public function getSueldoHora(): ?string{
         return $this->sueldoHora;
     }
 
-    public function setSueldoHora(?string $sueldoHora): static
-    {
+    public function setSueldoHora(?string $sueldoHora): static{
         $this->sueldoHora = $sueldoHora;
-
         return $this;
     }
 
@@ -99,7 +82,6 @@ class Autores
             $this->articulos->add($articulo);
             $articulo->setNifAutor($this);
         }
-
         return $this;
     }
 
@@ -111,7 +93,6 @@ class Autores
                 $articulo->setNifAutor(null);
             }
         }
-
         return $this;
     }
 }

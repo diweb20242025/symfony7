@@ -22,6 +22,7 @@ final class AutoresController extends AbstractController
     }
 
     // Ej1: Inserción con datos en el código
+    // C1 -> Insertar 1 registro por código
     #[Route('/insertar-autor', name: 'app_autores_insertar_autor1')]
     public function insertarAutor1(ManagerRegistry $doctrine): Response
     {
@@ -44,6 +45,7 @@ final class AutoresController extends AbstractController
     }
 
     // Ej2: Inserción con datos en la URL (parámetros)
+    // C2 -> Insertar 1 registro por parámetros
     #[Route('/insertar-autor/{nif}/{nombre}/{edad}/{sueldo}', 
     name: 'app_autores_insertar_autor2')]
     public function insertarAutor2(ManagerRegistry $doctrine,
@@ -67,6 +69,7 @@ final class AutoresController extends AbstractController
             . $autor->getNif() ." </h2>");
     }
 
+    // R1 -> Consultar completo con tabla Bootstrap
     #[Route('/ver-autores', name: 'app_autores_ver')]
     public function verAutores(ManagerRegistry $doctrine): Response
     {
@@ -75,6 +78,29 @@ final class AutoresController extends AbstractController
         $repoAutores = $doctrine->getRepository(Autores::class);
         // Sacamos TODOS los registros
         $autores = $repoAutores->findAll();
+        
+        return $this->render('autores/autores.html.twig', [
+            'controller_name' => 'AutoresController',
+            'autores' => $autores,
+        ]);
+    }
+
+
+    // U1 -> Actualizar por ID y parámetros
+    #[Route('/cambiar-autor/{nif}/{nombre}/{edad}', 
+    name: 'app_autores_ver')]
+    public function cambiarAutor(ManagerRegistry $doctrine,
+    string $nif, string $nombre, int $edad): Response
+    {
+        // Sacamos de la biblioteca de gestión de Registros
+        // ManagerRegistry el repositorio de Autores
+        $repoAutores = $doctrine->getRepository(Autores::class);
+        // Sacamos TODOS los registros
+        $autor = $repoAutores->find($nif);
+        $autor->setNombre($nombre);
+        $autor->setEdad($edad);
+
+        // Guardo el autor modificado
         
         return $this->render('autores/autores.html.twig', [
             'controller_name' => 'AutoresController',

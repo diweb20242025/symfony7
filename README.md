@@ -20,13 +20,13 @@ Aleatorio:
 
 Autores (tabla principal):
 - http://localhost:8000/autores
-- http://localhost:8000/insertar-autor
-- http://localhost:8000/insertar-autor/{nif}/{nombre}/{edad}/{sueldo}
+- [C1] http://localhost:8000/insertar-autor
+- [C2] http://localhost:8000/insertar-autor/{nif}/{nombre}/{edad}/{sueldo}
 - http://localhost:8000/insertar-autor/11223344F/Iván/48/15.50
 
 Articulos (tabla relacionada): 
-- http://localhost:8000/crear-articulos
-- http://localhost:8000/crea-articulo/{titulo}/{publicado}/{nif}
+- [C3] http://localhost:8000/crear-articulos
+- [C4] http://localhost:8000/crea-articulo/{titulo}/{publicado}/{nif}
 - http://localhost:8000/crea-articulo/"PRL Acabado!"/1/12345678B.0
 
 ### Endpoints de Consulta
@@ -59,7 +59,15 @@ Articulos (tabla relacionada):
 
 
 Autores (tabla principal):
-- http://localhost:8000/ver-autores
+- [R1] http://localhost:8000/ver-autores
 
 Articulos (tabla relacionada):
-- http://localhost:8000/ver-articulos
+- [R2] http://localhost:8000/ver-articulos
+- [R3a] http://localhost:8000/ver-articulo/{id}
+- [R3b] http://localhost:8000/mostrar-articulo/{id}
+- [R4] http://localhost:8000/consultar-articulos/{nifAutor}/{publicado}
+- [R5] http://localhost:8000/consultar-articulo/{nifAutor}
+
+### Endpoints de Actualización
+
+- [U1] http://localhost:8000/
