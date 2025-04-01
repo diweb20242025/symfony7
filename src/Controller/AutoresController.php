@@ -88,24 +88,40 @@ final class AutoresController extends AbstractController
 
     // U1 -> Actualizar por ID y parámetros
     #[Route('/cambiar-autor/{nif}/{nombre}/{edad}', 
-    name: 'app_autores_ver')]
+    name: 'app_autores_actualizar')]
     public function cambiarAutor(ManagerRegistry $doctrine,
     string $nif, string $nombre, int $edad): Response
     {
         // Sacamos de la biblioteca de gestión de Registros
         // ManagerRegistry el repositorio de Autores
         $repoAutores = $doctrine->getRepository(Autores::class);
-        // Sacamos TODOS los registros
-        $autor = $repoAutores->find($nif);
-        $autor->setNombre($nombre);
-        $autor->setEdad($edad);
-
-        // Guardo el autor modificado
         
+        // Buscamos el autor a cambiar
+        $autor = $repoAutores->find($nif);
+
+        if($autor == null) {
+            echo "Autor NO encontrado";
+        } else {
+            $autor->setNombre($nombre);
+            $autor->setEdad($edad);
+            // Guardo el autor modificado
+            $entityManager = $doctrine->getManager();
+            $entityManager->flush();
+        }
+        
+        // OJO! Redireccionamos la salida.
+        // redirectToRoute -> Redireccionar a ruta (name)
+        // render -> Renderizar un twig (vista)
+        return $this->redirectToRoute('app_autores_ver', [
+            'controller_name' => 'Autor Actualizado!',
+        ]);
+        
+        /*
         return $this->render('autores/autores.html.twig', [
             'controller_name' => 'AutoresController',
-            'autores' => $autores,
+            //'autores' => $autores,
         ]);
+        */
     }
 
     

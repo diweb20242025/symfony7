@@ -8,7 +8,15 @@ use App\Entity\Autores;     // OJO! Poner también la principal
 use Doctrine\Persistence\ManagerRegistry;
 // Vamos a meter directamente el repositorio
 use App\Repository\ArticulosRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+
+// Componentes del formulario
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\RadioType;
 
 final class ArticulosController extends AbstractController
 {
@@ -201,5 +209,92 @@ final class ArticulosController extends AbstractController
             'articulos' => [$articulo],
         ]);
         */
+    }
+
+    // U2 -> Actualizar por ID, con parámetros y cambio del FK!!
+    // Si se cambia el FK, el tipo NO es string, es el objeto!
+    #[Route('/cambiar-articulo/{id}/{titulo}/{nifAutor}', 
+    name: 'app_articulos_actualizar')]
+    public function cambiarArticulo(ManagerRegistry $doctrine,
+    int $id, string $titulo, Autores $nifAutor): Response
+    {
+        // Sacamos el entityManager
+        $entityManager = $doctrine->getManager();
+        $repoArticulos = $entityManager->getRepository(Articulos::class);
+        $repoAutores = $entityManager->getRepository(Autores::class);
+
+        $articulo = $repoArticulos->find($id);
+        $autor = $repoAutores->find($nifAutor);
+
+        // Controlamos el fallo
+        if($articulo == null || $autor == null) {
+            return new Response("<h1> Articulo/Autor NO existe </h1>");
+        } else {
+            // Cambiamos el articulo
+            $articulo->setTitulo($titulo);
+            $articulo->setNifAutor($nifAutor);
+            // Actualizamos la Base de datos
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_articulos_ver', [
+            'controller_name' => 'Articulo Actualizado!',
+        ]);
+        /*
+        return $this->render('articulos/index.html.twig', [
+            'controller_name' => 'ArticulosController',
+        ]);
+        */
+    }
+
+    // D1 -> Eliminar por ID (Tabla relacionada!)
+    #[Route('/articulo-borrar/{id}', 
+    name: 'app_articulos_borrar')]
+    public function borrarArticulo(
+        EntityManagerInterface $entityManager, int $id): Response
+    {
+        // Busco el artículo
+        $repoArticulos = $entityManager->getRepository(Articulos::class);
+        $articulo = $repoArticulos->find($id);
+        if($articulo == null) {
+            return new Response("<h1> Articulo NO encontrado </h1>");
+        } else {
+            $entityManager->remove($articulo);
+            $entityManager->flush();
+        }
+        return $this->redirectToRoute('app_articulos_ver', [
+            'controller_name' => 'Articulo Eliminado!',
+        ]);
+    }
+
+    // F1 -> Formulario completo Ambas tablas
+    // Añadimos 1 articulo con un select para Autores
+    // Request -> Symfony\Component\HttpFoundation\Request;
+    #[Route('/articulos-form', name: 'app_articulos_form')]
+    public function articulosForm(ManagerRegistry $doctrine,
+    Request $request): Response
+    {
+        // 'titulo', TextType::class
+        // <input type="text" name="titulo">
+        $articulo = new Articulos();
+        $formulario = $this->createFormBuilder($articulo)
+        ->add('titulo', TextType::class,[
+            'label' => 'Título'
+        ])
+        ->add('publicado', RadioType::class,[
+            'label' => '¿Está publicado?',
+            'value' => true
+        ])
+        ->add('nifAutor', EntityType::class,[
+            'label' => 'Elige Autor',
+            'placeholder' => 'Elija opción',
+            'class' =>  Autores::class,
+            'choice_label' => 'nombre'
+        ])
+        ->getForm();
+
+        return $this->render('articulos/index.html.twig', [
+            'controller_name' => 'ArticulosController',
+        ]);
     }
 }
