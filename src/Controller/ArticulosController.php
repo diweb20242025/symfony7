@@ -1,16 +1,15 @@
 <?php
 namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Articulos;   // Entidad Articulos
 use App\Entity\Autores;     // OJO! Poner también la principal
 use Doctrine\Persistence\ManagerRegistry;
-// Vamos a meter directamente el repositorio
-use App\Repository\ArticulosRepository;
-use Doctrine\ORM\EntityManager;
+use App\Repository\ArticulosRepository; // Vamos a meter directamente el repositorio
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -110,7 +109,6 @@ final class ArticulosController extends AbstractController
     public function verArticulos(ArticulosRepository $repo): Response
     {
         $articulos = $repo->findAll();
-
         return $this->render('articulos/articulos.html.twig', [
             'controller_name' => 'ArticulosController',
             'articulos' => $articulos,
@@ -125,7 +123,6 @@ final class ArticulosController extends AbstractController
     int $id): Response
     {
         $articulo = $repo->find($id);
-
         return $this->render('articulos/articulos.html.twig', [
             'controller_name' => 'ArticulosController',
             'articulos' => [$articulo],
@@ -149,7 +146,6 @@ final class ArticulosController extends AbstractController
         );
 
         // Aquí la salida NO es twig. Es JSON!!!!
-        
         $miJSON = [];
         foreach ($articulos as $articulo) {
             $miJSON[] = [
@@ -161,7 +157,6 @@ final class ArticulosController extends AbstractController
         }
 
         return new JsonResponse($miJSON);
-        
         // Si queremos devolver una tabla con twig
         /*
         return $this->render('articulos/articulos.html.twig', [
@@ -171,7 +166,6 @@ final class ArticulosController extends AbstractController
         */
     }
 
-
     // R5 -> Consultar por parámetros. Salida 1 Registro JSON!
     #[Route('/consultar-articulo/{nifAutor}', 
     name: 'app_articulos_consultar_articulo')]
@@ -179,16 +173,10 @@ final class ArticulosController extends AbstractController
     string $nifAutor): JsonResponse
     {
         $articulo = $repo->findOneBy(
-            [
-                'nifAutor' => $nifAutor,
-            ],
-            [
-                'titulo' => 'DESC'  // DESC | ASC
-            ]
+            [   'nifAutor' => $nifAutor,    ],
+            [   'titulo' => 'DESC'          ]             // DESC | ASC 
         );
-
         // Aquí la salida NO es twig. Es JSON!!!!
-        
         if($articulo == null) {
             $miJSON = "Articulo no encontrado";
         } else {
@@ -199,7 +187,6 @@ final class ArticulosController extends AbstractController
                 'Nombre Autor' => $articulo->getNifAutor()->getNombre(),
             ];
         }
-        
         return new JsonResponse($miJSON);
         
         // Si queremos devolver una tabla con twig
@@ -272,7 +259,7 @@ final class ArticulosController extends AbstractController
     // Request -> Symfony\Component\HttpFoundation\Request;
     #[Route('/articulos-form', name: 'app_articulos_form')]
     public function articulosForm(ManagerRegistry $doctrine,
-    Request $request): Response
+    Request $envio): Response
     {
         // 'titulo', TextType::class
         // <input type="text" name="titulo">
@@ -281,10 +268,26 @@ final class ArticulosController extends AbstractController
         ->add('titulo', TextType::class,[
             'label' => 'Título'
         ])
+        
         ->add('publicado', RadioType::class,[
             'label' => '¿Está publicado?',
-            'value' => true
+            'required' => false,   // <-- esto evita el error si no se marca
+            'value' => false,      // <-- valor por defecto si no se marca
         ])
+        
+        // Con el radio (x) Si ( ) No
+        /*
+        ->add('publicado', ChoiceType::class, [
+            'label' => '¿Está publicado?',
+            'choices' => [
+                'Sí' => true,
+                'No' => false,
+            ],
+            'expanded' => true,
+            'multiple' => false,
+        ])
+        */
+
         ->add('nifAutor', EntityType::class,[
             'label' => 'Elige Autor',
             'placeholder' => 'Elija opción',
@@ -293,8 +296,20 @@ final class ArticulosController extends AbstractController
         ])
         ->getForm();
 
-        return $this->render('articulos/index.html.twig', [
-            'controller_name' => 'ArticulosController',
+        // Una vez hemos pintado el formulario, lo mandamos
+        // Y preparamos la recepción de sus datos
+        $formulario->handleRequest($envio);
+        if($formulario->isSubmitted() && $formulario->isValid()) {
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($articulo);
+            $entityManager->flush();
+            // Redireccionamos
+            return $this->redirectToRoute('app_articulos_ver');
+        }
+        // Pintamos el formulario
+        return $this->render('articulos/form.articulos.html.twig', [
+            'controller_name' => 'Formulario de Articulos',
+            'formulario' => $formulario->createView(),
         ]);
     }
 }

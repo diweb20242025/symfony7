@@ -31,6 +31,35 @@ Articulos (tabla relacionada):
 
 ### Endpoints de Consulta
 
+
+Autores (tabla principal):
+- [R1] http://localhost:8000/ver-autores
+
+Articulos (tabla relacionada):
+- [R2] http://localhost:8000/ver-articulos
+- [R3a] http://localhost:8000/ver-articulo/{id}
+- [R3b] http://localhost:8000/mostrar-articulo/{id}
+- [R4] http://localhost:8000/consultar-articulos/{nifAutor}/{publicado}
+- [R5] http://localhost:8000/consultar-articulo/{nifAutor}
+
+### Endpoints de Actualización
+
+- [U1] http://localhost:8000/cambiar-autor/{nif}/{nombre}/{edad}
+- [U2] http://localhost:8000/cambiar-articulo/{id}/{titulo}/{nifAutor}
+
+### Endpoints de Eliminación
+
+- [D1] http://localhost:8000/articulo-borrar/{id}
+
+### Endpoints de Formularios
+
+- [F1] http://localhost:8000/articulos-form
+- [F2] http://localhost:8000/autores-form
+
+
+### Métodos por defecto de los repositorios
+
+
 - Métodos por defecto de los Repositorios
   - findAll() -> SELECT * FROM "tabla" => array registros
     Ej: SELECT * FROM autores;
@@ -56,18 +85,3 @@ Articulos (tabla relacionada):
     Ej: SELECT * FROM autores
         WHERE name = "pepito"
         AND edad = 78;
-
-
-Autores (tabla principal):
-- [R1] http://localhost:8000/ver-autores
-
-Articulos (tabla relacionada):
-- [R2] http://localhost:8000/ver-articulos
-- [R3a] http://localhost:8000/ver-articulo/{id}
-- [R3b] http://localhost:8000/mostrar-articulo/{id}
-- [R4] http://localhost:8000/consultar-articulos/{nifAutor}/{publicado}
-- [R5] http://localhost:8000/consultar-articulo/{nifAutor}
-
-### Endpoints de Actualización
-
-- [U1] http://localhost:8000/

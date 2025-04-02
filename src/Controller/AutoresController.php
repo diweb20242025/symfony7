@@ -10,6 +10,11 @@ use App\Entity\Autores;     // Entidad Autores
 // Añadimos la biblioteca de gestión de Registros (IMPORTANTE!!)
 // De aquí sacaremos el entityManager que es el gestor de Entidades
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AutoresController extends AbstractController
 {
@@ -76,6 +81,7 @@ final class AutoresController extends AbstractController
         // Sacamos de la biblioteca de gestión de Registros
         // ManagerRegistry el repositorio de Autores
         $repoAutores = $doctrine->getRepository(Autores::class);
+
         // Sacamos TODOS los registros
         $autores = $repoAutores->findAll();
         
@@ -90,7 +96,8 @@ final class AutoresController extends AbstractController
     #[Route('/cambiar-autor/{nif}/{nombre}/{edad}', 
     name: 'app_autores_actualizar')]
     public function cambiarAutor(ManagerRegistry $doctrine,
-    string $nif, string $nombre, int $edad): Response
+    string $nif, string $nombre, 
+    int $edad): Response
     {
         // Sacamos de la biblioteca de gestión de Registros
         // ManagerRegistry el repositorio de Autores
@@ -104,6 +111,7 @@ final class AutoresController extends AbstractController
         } else {
             $autor->setNombre($nombre);
             $autor->setEdad($edad);
+
             // Guardo el autor modificado
             $entityManager = $doctrine->getManager();
             $entityManager->flush();
@@ -116,6 +124,7 @@ final class AutoresController extends AbstractController
             'controller_name' => 'Autor Actualizado!',
         ]);
         
+        // Dejo el render para ver la alternativa
         /*
         return $this->render('autores/autores.html.twig', [
             'controller_name' => 'AutoresController',
@@ -124,5 +133,57 @@ final class AutoresController extends AbstractController
         */
     }
 
+    // F2 -> Formulario completo Tabla Principal
+    #[Route('/autores-form', name: 'app_autores_form')]
+    public function autoresForm(ManagerRegistry $doctrine,
+    Request $envio): Response
+    {
+        $autor = new Autores();
+
+        $formulario = $this->createFormBuilder($autor)
+        ->add('nif', TextType::class, [
+            'label' => 'NIF Autor'
+        ])
+        ->add('nombre',  TextType::class, [
+            'label' => 'Nombre'
+        ])
+        ->add('edad', IntegerType::class, [
+            'label' => 'Edad',
+            'attr' => [
+                'min' => 18,
+                'max' => 70,
+            ],
+        ])
+        ->add('sueldoHora', NumberType::class, [
+            'label' => 'Sueldo por Hora',
+            'html5' => true,    // Formulario estilo HTML5
+            'scale' => 2,       // Número de decimales
+            'attr' => [
+                'min' => 9.95,
+                'max' => 49.95,
+                'step' => 0.05
+            ]
+        ])
+        ->add('Guardar', SubmitType::class, [
+            'attr' => [
+                'class' => 'btn btn-danger mt-3'
+            ]
+        ])
+        ->getForm();
+
+        $formulario->handleRequest($envio);
+        if($formulario->isSubmitted() && $formulario->isValid()) {
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($autor);
+            $entityManager->flush();
+            // Redireccionamos
+            return $this->redirectToRoute('app_autores_ver');
+        }
+        // Pintamos el formulario
+        return $this->render('autores/form.autores.html.twig', [
+            'controller_name' => 'Formulario de Autores',
+            'formulario' => $formulario->createView(),
+        ]);
+    }
     
 }

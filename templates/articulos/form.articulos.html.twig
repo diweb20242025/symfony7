@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+{# form.articulos.html.twig #}
+
+{# Theme para formularios de bootstrap #}
+{% form_theme formulario 'bootstrap_5_layout.html.twig' %}
+
+{% block title %}Hello ArticulosController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code>/var/www/html/symfony7/src/Controller/ArticulosController.php</code></li>
+        <li>Your template at <code>/var/www/html/symfony7/templates/articulos/index.html.twig</code></li>
+    </ul>
+</div>
+<section class="container mt-5">
+    <nav class="bg-primary p-4 rounded shadow w-50 mx-auto text-white">
+        <h3 class="mb-4 text-center">Añadir Nuevo Artículo</h3>
+
+        {{ form_start(formulario) }}
+            {{ form_widget(formulario) }}
+            <button class="btn btn-success mt-3">Añadir Artículo</button>
+        {{ form_end(formulario) }}
+    </nav>
+</section>
+{% endblock %}
